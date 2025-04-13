@@ -1,0 +1,9 @@
+Feature: Create Purchase Order
+
+Scenario: Successful creation of a new purchase order
+  Given a Hospital Staff user is logged in
+  And the user navigates to the "Create Purchase Order" page
+  When the user enters all required purchase order details (e.g., order date, items, quantities, prices)
+  And the user submits the form
+  Then a new purchase order is created with status "Pending"
+  And the new order is visible in the order list.

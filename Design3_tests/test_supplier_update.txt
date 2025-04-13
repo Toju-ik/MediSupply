@@ -1,0 +1,16 @@
+Feature: Update Order Status by Supplier
+
+Scenario: Supplier updates order status to "Shipped"
+  Given a Supplier is logged in
+  And there exists an approved purchase order with status "Approved"
+  When the supplier selects the order and updates the status to "Shipped"
+  Then the order status is updated to "Shipped"
+  And the change is reflected in the system
+  And relevant parties (Hospital Staff and Purchasing Manager) are notified
+
+Scenario: Supplier updates order status from "Shipped" to "Delivered"
+  Given a Supplier is logged in
+  And there exists a purchase order with status "Shipped"
+  When the supplier updates the status to "Delivered"
+  Then the order status is changed to "Delivered"
+  And the system records the delivery confirmation

@@ -1,0 +1,19 @@
+Feature: View Purchase Orders
+
+Scenario: Hospital Staff views their purchase orders
+  Given a Hospital Staff user is logged in
+  When the user navigates to the "View Orders" page
+  Then the system displays a list of purchase orders created by that user
+  And each order shows its details and current status
+
+Scenario: Purchasing Manager views pending orders
+  Given a Purchasing Manager is logged in
+  When the manager navigates to the "View Orders" page
+  Then the system displays a list of purchase orders with status "Pending"
+  And each order includes the requester’s details for review
+
+Scenario: Supplier views approved orders
+  Given a Supplier is logged in
+  When the supplier navigates to the "View Orders" page
+  Then the system displays a list of purchase orders with status "Approved"
+  And each order shows the details necessary for fulfillment

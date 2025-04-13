@@ -1,0 +1,15 @@
+Feature: Approve or Reject Purchase Order
+
+Scenario: Approving a purchase order
+  Given a Purchasing Manager is logged in
+  And there exists a purchase order with status "Pending"
+  When the manager selects the purchase order and chooses "Approve"
+  Then the purchase order status is updated to "Approved"
+  And the Hospital Staff user is notified of the approval
+
+Scenario: Rejecting a purchase order
+  Given a Purchasing Manager is logged in
+  And there exists a purchase order with status "Pending"
+  When the manager selects the purchase order and chooses "Reject"
+  Then the purchase order status is updated to "Rejected"
+  And the Hospital Staff user is notified of the rejection
