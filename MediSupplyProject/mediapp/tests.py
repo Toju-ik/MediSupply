@@ -17,6 +17,6 @@ class PurchaseOrderTests(TestCase):
 
             'status': 'Pending'
         })
-        self.assertEqual(response.status_code, 302)  
+        self.assertEqual(response.status_code, 302)
         self.assertTrue(PurchaseOrder.objects.filter(created_by=self.staff).exists())
 

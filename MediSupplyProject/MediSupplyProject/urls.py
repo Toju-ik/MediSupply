@@ -16,9 +16,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import RedirectView
 
 urlpatterns = [
+    # 1. Admin site
     path('admin/', admin.site.urls),
+
+    # 2. Authentication (login/logout) URLs
+    path('accounts/', include('django.contrib.auth.urls')),
+
+    # 3. Redirect the root URL to /orders/
+    path('', RedirectView.as_view(url='orders/', permanent=False)),
+
+    # 4. All other URLs are handled
     path('', include('mediapp.urls')),
+
+
 
 ]

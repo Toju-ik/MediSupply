@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+  <h2>Review Order {{ order.order_id }}</h2>
+  <p><strong>Created By:</strong> {{ order.created_by.username }}</p>
+  <p><strong>Date:</strong> {{ order.date_created }}</p>
+  <p><strong>Items:</strong></p>
+  <ul>
+    {% for item in order.order_items.all %}
+      <li>{{ item.description }} &times; {{ item.quantity }} @ {{ item.price }}</li>
+    {% endfor %}
+  </ul>
+  <form method="post">
+    {% csrf_token %}
+    <button name="action" value="approve" class="btn btn-success">Approve</button>
+    <button name="action" value="reject" class="btn btn-danger">Reject</button>
+  </form>
+</div>
+{% endblock %}

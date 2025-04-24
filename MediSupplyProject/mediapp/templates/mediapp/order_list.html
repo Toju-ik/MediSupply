@@ -1,17 +1,43 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Create Purchase Order</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-</head>
-<body>
-    <div class="container">
-        <h1>Create Purchase Order</h1>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary">Create Order</button>
-        </form>
-    </div>
-</body>
-</html>
+
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+  <h2>Purchase Orders</h2>
+  {% if orders %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Created By</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Total</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in orders %}
+        <tr>
+          <td>{{ order.order_id }}</td>
+          <td>{{ order.created_by.username }}</td>
+          <td>{{ order.date_created|date:"Y-m-d H:i" }}</td>
+          <td>{{ order.status }}</td>
+          <td>{{ order.total_amount }}</td>
+          <td>
+            {% if user.role == 'manager' and order.status == 'Pending' %}
+              <a href="{% url 'approve_order' order.order_id %}" class="btn btn-sm btn-primary">Review</a>
+            {% elif user.role == 'supplier' and order.status == 'Approved' %}
+              <a href="{% url 'supplier_update' order.order_id %}" class="btn btn-sm btn-secondary">Update Status</a>
+            {% else %}
+              &mdash;
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No orders found.</p>
+  {% endif %}
+</div>
+{% endblock %}
