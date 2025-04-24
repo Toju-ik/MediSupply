@@ -1,8 +1,13 @@
-from django.shortcuts import render
-from django.shortcuts import render, redirect
+# mediapp/views.py
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+
 from .models import PurchaseOrder
-from .forms import PurchaseOrderForm
+from .forms import PurchaseOrderForm, OrderItemFormSet
+
 
 @login_required
 def create_purchase_order(request):
@@ -12,14 +17,12 @@ def create_purchase_order(request):
             order = form.save(commit=False)
             order.created_by = request.user
             order.save()
-            return redirect('order_list')
+            # Redirect immediately to the items form
+            return redirect('add_order_items', order_id=order.order_id)
     else:
         form = PurchaseOrderForm()
     return render(request, 'mediapp/create_order.html', {'form': form})
 
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from .models import PurchaseOrder
 
 @login_required
 def order_list(request):
@@ -36,8 +39,7 @@ def order_list(request):
     return render(request, 'mediapp/order_list.html', {
         'orders': orders
     })
-from django.shortcuts import get_object_or_404, redirect
-from django.contrib import messages
+
 
 @login_required
 def approve_order(request, order_id):
@@ -54,9 +56,15 @@ def approve_order(request, order_id):
         return redirect('order_list')
     return render(request, 'mediapp/approve_order.html', {'order': order})
 
+
 @login_required
 def supplier_update(request, order_id):
-    order = get_object_or_404(PurchaseOrder, pk=order_id, status='Approved')
+    # Allow updating if order is Approved or already Shipped
+    order = get_object_or_404(
+        PurchaseOrder,
+        pk=order_id,
+        status__in=['Approved', 'Shipped']
+    )
     if request.method == 'POST':
         new_status = request.POST.get('status')
         if new_status in ['Shipped', 'Delivered']:
@@ -64,5 +72,26 @@ def supplier_update(request, order_id):
             order.save()
             messages.success(request, f"Order {order_id} marked as {new_status}.")
         return redirect('order_list')
-    return render(request, 'mediapp/supplier_update.html', {'order': order})
 
+    return render(request, 'mediapp/supplier_update.html', {
+        'order': order
+    })
+
+
+@login_required
+def add_order_items(request, order_id):
+    order = get_object_or_404(PurchaseOrder, pk=order_id, created_by=request.user)
+    formset = OrderItemFormSet(request.POST or None, instance=order)
+
+    if request.method == 'POST' and formset.is_valid():
+        formset.save()
+        # Recalculate total_amount
+        total = sum(item.quantity * item.price for item in order.order_items.all())
+        order.total_amount = total
+        order.save()
+        return redirect('order_list')
+
+    return render(request, 'mediapp/add_items.html', {
+        'order': order,
+        'formset': formset
+    })

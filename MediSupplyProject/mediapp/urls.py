@@ -14,4 +14,7 @@ urlpatterns = [
 
     # 4. Supplier updates a specific order's status
     path('orders/<int:order_id>/update/', views.supplier_update, name='supplier_update'),
+
+    # 5. Let users hit the "Add Items" page
+path('orders/<int:order_id>/items/', views.add_order_items, name='add_order_items'),
 ]

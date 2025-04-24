@@ -32,6 +32,24 @@
               &mdash;
             {% endif %}
           </td>
+          <td>
+            {% if order.order_items.count == 0 and user.role == 'staff' %}
+              <a href="{% url 'add_order_items' order.order_id %}" class="btn btn-sm btn-info">
+                Add Items
+              </a>
+            {% elif order.order_items.count > 0 and user.role == 'staff' %}
+              <a href="{% url 'add_order_items' order.order_id %}" class="btn btn-sm btn-secondary">
+                Edit Items
+              </a>
+            {% elif user.role == 'manager' and order.status == 'Pending' %}
+              <a href="{% url 'approve_order' order.order_id %}" class="btn btn-sm btn-primary">Review</a>
+            {% elif user.role == 'supplier' and order.status == 'Approved' %}
+              <a href="{% url 'supplier_update' order.order_id %}" class="btn btn-sm btn-secondary">Update Status</a>
+            {% else %}
+              &mdash;
+            {% endif %}
+          </td>
+
         </tr>
         {% endfor %}
       </tbody>
